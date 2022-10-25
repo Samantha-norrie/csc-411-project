@@ -1,0 +1,19 @@
+.donut-container {
+    max-width: 40%;
+    max-height: 40%;
+}
+
+.interactive-intro-donuts-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10%;
+}
+.text-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+.slider-container {
+    width: 45%;
+}
