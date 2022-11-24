@@ -12,12 +12,6 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -29,6 +23,11 @@
   color: white;
 }
 
+button {
+  background-color: white;
+  border-radius: 25px;
+  color: black
+}
 .App-link {
   color: black;
 }
@@ -102,4 +101,21 @@
   grid-column-end: 3;
   grid-row-start: 3;
   grid-row-end: 3;
+}
+
+#bottom-text {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 4;
+  grid-row-end: 5;
+}
+#button-container {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 4;
+  grid-row-end: 5;
+}
+.prelude-comfort-state-page {
+  height: 100vh;
+  padding-top: 10%;
 }

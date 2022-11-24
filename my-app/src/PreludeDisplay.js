@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import InteractiveIntroDonuts from "./InteractiveIntroDonuts";
 import { Slider } from 'antd';
 import './App.css';
@@ -33,7 +33,17 @@ const COMFORT_OPTIONS = {
         width: 380,
         type: 'pie',
       },
-    labels: ["Physical Health", "Mental Health", "Both", "Not Specified"]
+    labels: ["No", "Maybe", "Yes", "Not Specified"],
+    colors:['#8a1b15', '#913530', '#2f057d', '#4d3534']
+};
+
+const RACE_OPTIONS = {
+    chart: {
+        width: 380,
+        type: 'pie',
+      },
+    labels: ["White", "Asian", "Black or African American", "Hispanic","More than one of the above", 
+    "Not Specified"]
 };
 
 const COUNTRY_OPTIONS = {
@@ -95,25 +105,33 @@ function getGenderSeriesData() {
         }
     }
     return [female_identifying, male_identifying, other,not_specified];
-}  
+} 
 
-function getComfortSeriesData() {
-    let mental_health = 0;
-    let physical_health = 0;
-    let both = 0;
-    let not_specified = 0
+function getRaceSeriesData() {
+    let white = 0;
+    let asian = 0;
+    let blackOrAfricanAmerican = 0;
+    let hispanic = 0;
+    let moreThanOneOfTheAbove = 0;
+    let not_specified = 0;
     let json_data_sets = [utils.data_2021, utils.data_2020, utils.data_2019, utils.data_2018, utils.data_2017];
     for(let j = 0; j < json_data_sets.length; j++) {
         for(let i = 0; i < json_data_sets[j].length; i++) {
-            let comfort_response = (json_data_sets[j][i]["Would you feel more comfortable talking to your coworkers about your physical health or your mental health?"]);
-            if(comfort_response ==="Physical health") {
-                physical_health = physical_health+1;
+            let race_response = (json_data_sets[j][i]["What is your race?"]);
+            if(race_response === "White" || race_response === "Caucasian") {
+                white = white+1;
             }
-            else if(comfort_response === "Mental health") {
-                mental_health = mental_health+1;
+            else if(race_response === "Asian") {
+                asian = asian+1;
             }
-            else if(comfort_response === "Same level of comfort for each") {
-                both = both +1;
+            else if(race_response === "Black or African American") {
+                blackOrAfricanAmerican = blackOrAfricanAmerican+1;
+            }
+            else if(race_response === "Hispanic") {
+                hispanic = hispanic +1;
+            }
+            else if(race_response === "More than one of the above") {
+                moreThanOneOfTheAbove = moreThanOneOfTheAbove +1;
             }
             else {
                 not_specified = not_specified+1;
@@ -121,7 +139,34 @@ function getComfortSeriesData() {
             
         }
     }
-    return [physical_health, mental_health, both,not_specified];
+    return [white, asian, blackOrAfricanAmerican, hispanic, moreThanOneOfTheAbove, not_specified];
+}
+
+function getComfortSeriesData() {
+    let no = 0;
+    let maybe = 0;
+    let yes = 0;
+    let not_specified = 0
+    let json_data_sets = [utils.data_2021, utils.data_2020, utils.data_2019, utils.data_2018, utils.data_2017];
+    for(let j = 0; j < json_data_sets.length; j++) {
+        for(let i = 0; i < json_data_sets[j].length; i++) {
+            let comfort_response = (json_data_sets[j][i]["Would you feel comfortable discussing a mental health issue with your coworkers?"]);
+            if(comfort_response ==="No") {
+                no = no+1;
+            }
+            else if(comfort_response === "Maybe") {
+                maybe = maybe+1;
+            }
+            else if(comfort_response === "Yes") {
+                yes = yes +1;
+            }
+            else {
+                not_specified = not_specified+1;
+            }
+            
+        }
+    }
+    return [no, maybe, yes,not_specified];
 }
 
 //TODO I'm down to reorganize this if we have time to do some code clean up
@@ -381,37 +426,65 @@ netherlands, newZealand, nigeria, norway, pakistan, philippines, poland, portuga
 southAfrica, spain, sriLanka, sweden, switzerland, taiwan, turkey, ukraine, unitedKingdom, usa, vietnam, not_specified];
 }
 export function PreludeDisplay(props){
-    // const 
+    const [displayInitialPage, setDisplayInitialPage] = useState(true);
+
+    const setDisplay = () => {
+        setDisplayInitialPage(false);
+    }
     return (
-        <div id="prelude-grid-container">
-            <p className="text-container">
-                Total number of participants: {calculate_num_participants()}
-            </p>
-            <div className="donut-one">
-            <ApexDonut
-                series={YEAR_SERIES}
-                options={YEAR_OPTIONS}
-            ></ApexDonut>
+        <>
+            {
+                displayInitialPage && 
+                <div id="prelude-grid-container">
+                <h1 className="text-container">
+                    {calculate_num_participants()} tech workers came together
+                </h1>
+                <div id="donut-one">
+                <ApexDonut
+                    series={YEAR_SERIES}
+                    options={YEAR_OPTIONS}
+                    caption={"Participants Surveyed Per Year"}
+                ></ApexDonut>
+                </div>
+                <div id="donut-two">
+                <ApexDonut
+                    series={getGenderSeriesData()}
+                    options={GENDER_OPTIONS}
+                    caption={"Participant Gender"}
+                ></ApexDonut>
+                </div>
+                <div id="donut-three">
+                <ApexDonut
+                    series={getRaceSeriesData()}
+                    options={RACE_OPTIONS}
+                    caption={"Participant Race"}
+                ></ApexDonut>
+                </div>
+                <div id="donut-four">
+                    <ApexDonut
+                        series={getCountrySeriesData()}
+                        options={COUNTRY_OPTIONS}
+                        caption={"Participant Countries"}
+                    ></ApexDonut>
+                </div>
+                <div id="button-container">
+                    <button onClick={setDisplay}>See what happened</button>
+                </div>
+                <h2 className="text-container" id="bottom-text">to answer questions about their mental health... </h2>
             </div>
-            <div className="donut-two">
-            <ApexDonut
-                series={getGenderSeriesData()}
-                options={GENDER_OPTIONS}
-            ></ApexDonut>
-            </div>
-            <div className="donut-three">
-            <ApexDonut
-                series={getCountrySeriesData()}
-                options={COUNTRY_OPTIONS}
-            ></ApexDonut>
-            </div>
-            <div className="donut-four">
-            <ApexDonut
-                series={getComfortSeriesData()}
-                options={COMFORT_OPTIONS}
-            ></ApexDonut>
-            </div>
-        </div>
+            }
+            {
+                !displayInitialPage &&
+                <div className="prelude-comfort-state-page">
+                    <ApexDonut
+                    series={getComfortSeriesData()}
+                    options={COMFORT_OPTIONS}
+                    caption={"Would you feel comfortable discussing a mental health issue with your coworkers?"}
+                    ></ApexDonut>
+                    <h1 className="text-container">Let's talk about our mental health.</h1>
+                </div>
+            }
+        </>
     );
 }
 export default PreludeDisplay;

@@ -23,6 +23,7 @@ class ApexDonut extends React.Component {
         return (
             <div>
                 <Chart options={this.props.options} series={this.props.series} type="pie" width={380}/>
+                <p className="text-container">{this.props.caption}</p>
             </div>
         );
     }
