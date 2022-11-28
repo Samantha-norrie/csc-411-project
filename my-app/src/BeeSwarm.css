@@ -1,0 +1,117 @@
+body {
+    width:100%
+}
+
+.centered {
+    display: table;
+    margin: 20px auto;
+}
+
+.graph {
+    width: 50%;
+    margin: 0 auto;
+}
+
+#checkboxes > * {
+    font-size: 14px;
+    display: inline;
+    padding-top: 3px;
+}
+
+.measure-group {
+    display:inline;
+}
+
+.scale-group {
+    padding-left: 40px;
+    display:inline;
+}
+
+button {
+    margin:0 auto;
+    display:block;
+}
+
+.measure, .scale {
+}
+
+svg {
+    background-color: white;
+}
+
+.cells path {
+    fill: none;
+    pointer-events: all;
+}
+
+div.tooltip {
+    position: absolute;
+    text-align: left;
+    color: white;
+    white-space: normal;
+    padding: 6px;
+    font-size: 14px;
+    background: rgb(96,125,139);
+    border: 1px solid rgb(96,125,139);
+    border-radius: 2px;
+    pointer-events: none;
+    cursor: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: rgb(96,125,139);
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font: 10px sans-serif;
+}
+
+.question {}
+
+.legend {
+    fill: rgba(0,0,0,.87);
+}
+
+.article {
+    position: fixed;
+    top: 20px;
+    left: 15px;
+    font-size: 35px;
+    color: rgb(96,125,139);
+}
+
+.article-tt {
+    font-size: 14px;
+    background: rgb(96,125,139);
+    border: 1px solid rgb(96,125,139);
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+/* fallback */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/materialicons/v139/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');
+  }
+  
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
