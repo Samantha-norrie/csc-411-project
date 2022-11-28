@@ -140,4 +140,8 @@ button {
 
 .donut-title-padding {
   padding-top: 1.5rem;
+  grid-column-start: 1;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 2;
 }

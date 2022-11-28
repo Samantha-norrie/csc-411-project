@@ -9,6 +9,7 @@ import $ from 'jquery';
 import * as d3 from 'd3';
 import {donutgraph} from 'd3';
 import ApexDonut from "./ApexDonut";
+import { BeeSwarmContainer } from "./BeeSwarmContainer";
 
 //TODO fix c h a o ti c casing 
 const YEAR_SERIES = [utils.data_2021.length, utils.data_2020.length ,utils.data_2019.length, utils.data_2018.length, utils.data_2017.length];
@@ -17,16 +18,28 @@ const YEAR_OPTIONS = {
         width: 380,
         type: 'pie',
       },
-    labels: ["2021", "2020", "2019", "2018", "2017"]
+    labels: ["2021", "2020", "2019", "2018", "2017"],
+    colors: ['#fa8e8e', '#f84f4f', '#d30909', '#a60707', '#7f0505'],
+    legend: {
+        labels: {
+            colors: ['#ffffff']
+        }
+    }
 };
 
 
 const GENDER_OPTIONS = {
     chart: {
-        width: 380,
+        width: '100%',
         type: 'pie',
       },
-    labels: ["Female", "Male", "Other", "Not Specified"]
+    labels: ["Female", "Male", "Other", "Not Specified"],
+    colors: ['#8238a5','#2323bb', '#232391', '#23235e'],
+    legend: {
+        labels: {
+            colors: ['#ffffff']
+        }
+    }
 };
 const COMFORT_OPTIONS = {
     chart: {
@@ -34,7 +47,26 @@ const COMFORT_OPTIONS = {
         type: 'pie',
       },
     labels: ["No", "Maybe", "Yes", "Not Specified"],
-    colors:['#8a1b15', '#913530', '#2f057d', '#4d3534']
+    colors:['#5C6288', '#474C6A', '#2f057d', '#45485A'],
+    legend: {
+        labels: {
+            colors: ['#ffffff']
+        }
+    }
+};
+
+const AGE_OPTIONS = {
+    chart: {
+        width: 380,
+        type: 'pie',
+      },
+    labels: ["1-20", "21-40", "41-60", "61-80", "81+", "Not Specified"],
+    colors:['#FAFF00', '#D6FE00', '#CCD108', '#A3A611', '#898C0B', '#7E7F48'],
+    legend: {
+        labels: {
+            colors: ['#ffffff']
+        }
+    }
 };
 
 const RACE_OPTIONS = {
@@ -43,22 +75,27 @@ const RACE_OPTIONS = {
         type: 'pie',
       },
     labels: ["White", "Asian", "Black or African American", "Hispanic","More than one of the above", 
-    "Not Specified"]
+    "Not Specified"],
+    colors: ['#23d991', '#23a991', '#238b91', '#236c91', '#235691', '#163744'],
+    legend: {
+        labels: {
+            colors: ['#ffffff']
+        }
+    }
 };
 
-const COUNTRY_OPTIONS = {
+const CONTINENT_OPTIONS = {
     chart: {
         width: 380,
         type: 'pie',
       },
-    labels: ["Afghanistan", "Albania", "Algeria", "Austrailia", "Austria", "Bangladesh", 
-    "Belgium", "Belarus", "Brazil", "Bulgaria", "Cameroon", "Canada", "Chile", "China", "Colombia",
-    "Croatia", "Egypt", "Estonia", "Finland", "France", "Ghana", "Germany", "Greece", "Hong Kong", "Iceland",
-    "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kenya", "Macedonia", "Malaysia",
-    "Mexico", "Mongolia", "Netherlands", "New Zealand", "Nigeria", "Norway", "Pakistan", "Philippines",
-    "Poland", "Portugal", "Russia", "Sao Tome and Principe", "Serbia", "Slovenia", "South Africa", "Spain",
-    "Sri Lanka", "Sweden", "Switzerland", "Taiwan", "Turkey", "Ukraine", "United Kingdom", "United States",
-    "Vietnam", "Not Specified"]
+    labels: ["Africa", "Asia", "North America", "South America", "Europe", "Not Specified"],
+    colors: ['#0fbffa', '#1791ba', '#1cb1e3', '#45bfe8', '#69ccec', '#127191'],
+    legend: {
+        labels: {
+            colors: ['#ffffff']
+        }
+    }
 };
 
 const participantCountData = [
@@ -169,8 +206,43 @@ function getComfortSeriesData() {
     return [no, maybe, yes,not_specified];
 }
 
+function getAgeSeriesData() {
+    let to_twenty = 0;
+    let to_fourty = 0;
+    let to_sixty = 0;
+    let not_specified = 0;
+    let to_eighty = 0;
+    let beyond = 0
+    let json_data_sets = [utils.data_2021, utils.data_2020, utils.data_2019, utils.data_2018, utils.data_2017];
+    for(let j = 0; j < json_data_sets.length; j++) {
+        for(let i = 0; i < json_data_sets[j].length; i++) {
+            let age_response = (json_data_sets[j][i]["What is your age?"]);
+            if(age_response <= 20) {
+                to_twenty = to_twenty+1;
+            }
+            else if(age_response <= 40) {
+                to_fourty = to_fourty+1;
+            }
+            else if(age_response <= 60) {
+                to_sixty = to_sixty +1;
+            }
+            else if(age_response <= 80) {
+                to_eighty = to_eighty +1;
+            }
+            else if(age_response > 80) {
+                beyond= beyond +1;
+            }
+            else {
+                not_specified = not_specified+1;
+            }
+            
+        }
+    }
+    return [to_twenty, to_fourty, to_sixty, to_eighty, beyond,not_specified];
+}
+
 //TODO I'm down to reorganize this if we have time to do some code clean up
-function getCountrySeriesData() {
+function getContinentSeriesData() {
     let afghanistan = 0;
     let albania = 0;
     let algeria = 0;
@@ -230,6 +302,13 @@ function getCountrySeriesData() {
     let unitedKingdom = 0;
     let vietnam = 0;
 
+    let oceania = 0;
+    let na = 0;
+    let sa = 0;
+    let asia = 0;
+    let eur = 0;
+    let africa = 0;
+
     let usa = 0;
     let not_specified = 0
     let json_data_sets = [utils.data_2021, utils.data_2020, utils.data_2019, utils.data_2018, utils.data_2017];
@@ -237,181 +316,181 @@ function getCountrySeriesData() {
         for(let i = 0; i < json_data_sets[j].length; i++) {
             let country = (json_data_sets[j][i]["What country do you *live* in?"]);
             if(country === "United States of America") {
-                usa = usa+1;
+                na = na +1;
             }
             else if(country === "Afghanistan") {
-                afghanistan = afghanistan+1;
+                asia = asia + 1;
             }
             else if(country === "Albania") {
-                albania = albania+1;
+                eur = eur+1;
             }
             else if(country === "Algeria") {
-                algeria = algeria+1;
+                africa = africa+1;
             }
             else if(country === "Austrailia") {
-                austrailia = austrailia+1;
+                oceania = oceania + 1;
             }     
             else if(country === "Austria") {
-                austria = austria+1;
+                eur = eur+1;
             }
             else if(country === "Bangladesh") {
-                bangladesh = bangladesh+1;
+                asia = asia + 1;
             }
             else if(country === "Belgium") {
-                belgium = belgium+1;
+                eur = eur+1;
             }
             else if(country === "Belarus") {
-                belarus = belarus+1;
+                eur = eur+1;
             }
             else if(country === "Brazil") {
-                brazil = brazil+1;
+                sa = sa + 1;
             }
             else if(country === "Bulgaria") {
-                bulgaria = bulgaria+1;
+                eur = eur+1;
             }
             else if(country === "Cameroon") {
-                cameroon = cameroon+1;
+                africa = africa+1;
             }
             else if(country === "Chile") {
-                chile = chile+1;
+                sa = sa + 1;
             }
             else if(country === "China") {
-                china = china+1;
+                asia = asia + 1;
             }
             else if(country === "Colombia") {
-                colombia = colombia+1;
+                sa = sa + 1;
             }
             else if(country === "Croatia") {
-                croatia = croatia+1;
+                eur = eur+1;
             }
             else if(country === "Egypt") {
-                egypt = egypt+1;
+                africa = africa+1;
             }
             else if(country === "Estonia") {
-                estonia = estonia+1;
+                eur = eur+1;
             }
             else if(country === "Finland") {
-                finland = finland+1;
+                eur = eur+1;
             }
             else if(country === "France") {
-                france = france+1;
+                eur = eur+1;
             }
             else if(country === "Ghana") {
-                ghana = ghana+1;
+                africa = africa+1;
             }
             else if(country === "Greece") {
-                greece = greece+1;
+                eur = eur+1;
             }
             else if(country === "Hong Kong") {
-                hongKong = hongKong+1;
+                asia = asia + 1;
             }
             else if(country === "Iceland") {
-                iceland = iceland+1;
+                eur = eur+1;
             }
             else if(country === "India") {
-                india = india+1;
+                asia = asia + 1;
             }
             else if(country === "Indonesia") {
-                indonesia = indonesia+1;
+                asia = asia + 1;
             }
             else if(country === "Ireland") {
-                ireland = ireland+1;
+                eur = eur+1;
             }
             else if(country === "Israel") {
-                israel = israel+1;
+                asia = asia + 1;
             }
             else if(country === "Italy") {
-                italy = italy+1;
+                eur = eur+1;
             }
             else if(country === "Japan") {
-                japan = japan+1;
+                asia = asia + 1;
             }
             else if(country === "Kenya") {
-                kenya = kenya+1;
+                africa = africa+1;
             }
             else if(country === "Macedonia") {
-                macedonia = macedonia+1;
+                eur = eur+1;
             }
             else if(country === "Malaysia") {
-                malaysia = malaysia+1;
+                asia = asia + 1;
             }
             else if(country === "Mexico") {
-                mexico = mexico+1;
+                na = na+1;
             }
             else if(country === "Mongolia") {
-                mongolia = mongolia+1;
+                asia = asia + 1;
             }
             else if(country === "Netherlands") {
-                netherlands = netherlands+1;
+                eur = eur+1;
             }
             else if(country === "New Zealand") {
-                southAfrica = southAfrica+1;
+                oceania = oceania+1;
             }
             else if(country === "Nigeria") {
-                nigeria = nigeria+1;
+                africa = africa+1;
             }
             else if(country === "Norway") {
-                norway = norway+1;
+                eur = eur+1;
             }
             else if(country === "Pakistan") {
-                pakistan = pakistan+1;
+                asia = asia + 1;
             }
             else if(country === "Philippines") {
-                philippines = philippines+1;
+                asia = asia + 1;
             }
             else if(country === "Poland") {
-                poland = poland+1;
+                eur = eur+1;
             }
             else if(country === "Portugal") {
-                portugal = portugal+1;
+                eur = eur+1;
             }
             else if(country === "Russia") {
-                russia = russia+1;
+                asia = asia + 1;
             }
             else if(country === "Sao Tome and Principe") {
-                saoTomeAndPrincipe = saoTomeAndPrincipe+1;
+                africa = africa+1;
             }
             else if(country === "Serbia") {
-                serbia = serbia+1;
+                eur = eur+1;
             }
             else if(country === "Slovenia") {
-                slovenia = slovenia+1;
+                eur = eur+1;
             }
             else if(country === "South Africa") {
-                southAfrica = southAfrica+1;
+                sa = sa+1;
             }
             else if(country === "Spain") {
-                spain = spain+1;
+                eur = eur+1;
             }
             else if(country === "Sri Lanka") {
-                sriLanka = sriLanka+1;
+                asia = asia + 1;
             }
             else if(country === "Sweden") {
-                sweden = sweden+1;
+                eur = eur+1;
             }
             else if(country === "Switzerland") {
-                switzerland = switzerland+1;
+                eur = eur+1;
             }
             else if(country === "Taiwan") {
-                taiwan = taiwan+1;
+                asia = asia + 1;
             }
             else if(country === "Turkey") {
-                turkey = turkey+1;
+                eur = eur+1;
             }
             else if(country === "Canada") {
-                canada = canada+1;
+                na = na+1;
             }
             else if(country === "Germany") {
-                germany = germany+1;
+                eur = eur+1;
             }
             else if(country === "Ukraine") {
-                ukraine = ukraine+1;
+                eur = eur+1;
             }
             else if(country === "United Kingdom") {
-                unitedKingdom = unitedKingdom+1;
+                eur = eur+1;
             }
             else if(country === "Vietnam") {
-                vietnam = vietnam+1;
+                asia = asia + 1;
             }
             else {
                 not_specified = not_specified+1;
@@ -419,37 +498,49 @@ function getCountrySeriesData() {
             
         }
     }
-    return [afghanistan, albania, algeria, austrailia, austria, bangladesh, belarus, belgium,brazil,
-    bulgaria, cameroon, canada, chile, china, colombia, croatia, egypt, estonia, finland, france, ghana,
-germany, greece, hongKong, iceland, india, indonesia, israel, italy, japan, kenya, macedonia, malaysia, mongolia,
-netherlands, newZealand, nigeria, norway, pakistan, philippines, poland, portugal, russia, saoTomeAndPrincipe, serbia, slovenia,
-southAfrica, spain, sriLanka, sweden, switzerland, taiwan, turkey, ukraine, unitedKingdom, usa, vietnam, not_specified];
+
+    return [africa, asia, na, sa, eur, not_specified]
 }
 export function PreludeDisplay(props){
     const [displayInitialPage, setDisplayInitialPage] = useState(true);
+    const [displayBeeSwarm, setDisplayBeeSwarm] = useState(false);
+    const [prelude, setPrelude] = useState(true)
 
     const setDisplay = () => {
         setDisplayInitialPage(false);
     }
+
+    const setBeeSwarm = () => {
+        setDisplayBeeSwarm(true);
+    }
+    const changePage = () => {
+        window.location.replace("index11.html");
+    } 
     return (
         <>
             {
-                displayInitialPage && 
+                (prelude && displayInitialPage && !displayBeeSwarm) && 
                 <div id="prelude-grid-container">
-                <h1 className="text-container">
+
+                <h1 className="text-container donut-title-padding">
                     {calculate_num_participants()} tech workers came together
                 </h1>
                 <div id="donut-one">
                 <ApexDonut
                     series={YEAR_SERIES}
                     options={YEAR_OPTIONS}
+                    topDisplay
                     caption={"Participants Surveyed Per Year"}
                 ></ApexDonut>
+                </div>
+                <div id="osmi-logo">
+                <img src="https://osmihelp.org/assets/img/osmi-logo-big.png" width="200" height="200"/>
                 </div>
                 <div id="donut-two">
                 <ApexDonut
                     series={getGenderSeriesData()}
                     options={GENDER_OPTIONS}
+                    topDisplay
                     caption={"Participant Gender"}
                 ></ApexDonut>
                 </div>
@@ -462,9 +553,16 @@ export function PreludeDisplay(props){
                 </div>
                 <div id="donut-four">
                     <ApexDonut
-                        series={getCountrySeriesData()}
-                        options={COUNTRY_OPTIONS}
-                        caption={"Participant Countries"}
+                        series={getContinentSeriesData()}
+                        options={CONTINENT_OPTIONS}
+                        caption={"Participant Continents"}
+                    ></ApexDonut>
+                </div>
+                <div id="donut-five">
+                    <ApexDonut
+                        series={getAgeSeriesData()}
+                        options={AGE_OPTIONS}
+                        caption={"Participant Age Ranges"}
                     ></ApexDonut>
                 </div>
                 <div id="button-container">
@@ -474,16 +572,24 @@ export function PreludeDisplay(props){
             </div>
             }
             {
-                !displayInitialPage &&
+                (prelude && !displayInitialPage && !displayBeeSwarm) &&
                 <div className="prelude-comfort-state-page">
+                    <h1 className="text-container">...only to find that they do not discuss it nearly enough.</h1>
                     <ApexDonut
                     series={getComfortSeriesData()}
                     options={COMFORT_OPTIONS}
-                    caption={"Would you feel comfortable discussing a mental health issue with your coworkers?"}
+
+                    caption={"\'Would you feel comfortable discussing a mental health issue with your coworkers?\'"}
                     ></ApexDonut>
-                    <h1 className="text-container">Let's talk about our mental health.</h1>
+                    <button onClick={setBeeSwarm}><h2><strong>Let's talk about our mental health.</strong></h2></button>
                 </div>
             }
+            {
+                (prelude && displayBeeSwarm && !displayInitialPage) &&
+                <BeeSwarmContainer/>
+            }
+            {/* <input type="button" value="create page" onclick="location.href='index.html'"/> */}
+            
         </>
     );
 }
