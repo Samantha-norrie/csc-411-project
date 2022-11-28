@@ -18,15 +18,21 @@ const OPTIONS = {
     labels: ["2021", "2020", "2019", "2018", "2017"]
 };
 
-class ApexDonut extends React.Component {
-    render () {
+export function ApexDonut(props) {
+
         return (
-            <div>
-                <Chart options={this.props.options} series={this.props.series} type="pie" width={380}/>
-                <p className="text-container">{this.props.caption}</p>
-            </div>
+        <div>
+            {
+                props.topDisplay && 
+                <p className="text-container donut-title-padding">{props.caption}</p>
+            }
+            <Chart className="donut-title-padding" options={props.options} series={props.series} type="pie" width={380}/>
+            {
+                !props.topDisplay && 
+                <p className="text-container donut-title-padding">{props.caption}</p>
+            }
+        </div>
         );
-    }
 
 }
 
